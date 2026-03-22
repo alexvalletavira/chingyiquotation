@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #1a1614;
+    --paper: #f5f0eb;
+    --cream: #ede7de;
+    --accent: #c8523a;
+    --muted: #7a6f68;
+    --border: #cfc7bd;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ──────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── LEFT PANEL: FORM ─────────────────────────── */
+  .form-panel {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 32px 28px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--cream);
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 12px; }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .field input, .field textarea {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--paper);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,82,58,0.12);
+  }
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* line items */
+  #line-items { display: flex; flex-direction: column; gap: 10px; }
+  .line-item {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+  }
+  .line-item .li-row { display: grid; grid-template-columns: 1fr 100px; gap: 8px; }
+  .line-item input {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .line-item input:focus { border-color: var(--accent); }
+  .line-item textarea {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    resize: vertical;
+    min-height: 60px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+  .line-item textarea:focus { border-color: var(--accent); }
+  .remove-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+    padding: 2px 5px;
+  }
+  .remove-btn:hover { opacity: 1; color: var(--accent); }
+
+  .add-line-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px dashed var(--border);
+    border-radius: 7px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s, color 0.15s;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .add-line-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* generate btn */
+  .gen-btn {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+    margin-top: 4px;
+  }
+  .gen-btn:hover { background: #b03e28; }
+  .gen-btn:active { transform: scale(0.98); }
+
+  /* ── RIGHT PANEL: PREVIEW ─────────────────────── */
+  .preview-panel {
+    background: var(--cream);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 32px;
+    overflow-y: auto;
+  }
+
+  /* ── QUOTE DOCUMENT ───────────────────────────── */
+  .quote-doc {
+    background: var(--white);
+    width: 700px;
+    min-height: 900px;
+    padding: 52px 52px 60px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    position: relative;
+  }
+
+  /* top bar */
+  .doc-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+  }
+  .doc-sender h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .doc-sender p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .doc-quote-badge {
+    background: var(--accent);
+    color: var(--white);
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    padding: 8px 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* meta row */
+  .doc-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .doc-meta-cell {
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-meta-cell:nth-child(2n) { border-right: none; }
+  .doc-meta-cell:last-child, .doc-meta-cell:nth-last-child(2) { border-bottom: none; }
+  .doc-meta-cell .mlabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .doc-meta-cell .mval {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  /* customer */
+  .doc-customer {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    border-radius: 2px;
+  }
+  .doc-customer .clabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .doc-customer .cname { font-size: 1rem; font-weight: 600; }
+  .doc-customer .cphone { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+
+  /* items table */
+  .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .doc-table thead tr {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .doc-table thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+  }
+  .doc-table thead th:last-child { text-align: right; }
+  .doc-table tbody tr { border-bottom: 1px solid var(--border); }
+  .doc-table tbody td { padding: 14px 14px; vertical-align: top; }
+  .doc-table .td-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    width: 32px;
+  }
+  .doc-table .td-desc { font-size: 0.88rem; line-height: 1.5; }
+  .doc-table .td-desc .item-title { font-weight: 600; margin-bottom: 4px; }
+  .doc-table .td-desc .item-notes {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .doc-table .td-qty {
+    font-size: 0.85rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .doc-table .td-amt {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  /* totals */
+  .doc-totals {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 32px;
+  }
+  .doc-totals table { border-collapse: collapse; min-width: 240px; }
+  .doc-totals td { padding: 6px 12px; font-size: 0.85rem; }
+  .doc-totals .tot-label { color: var(--muted); }
+  .doc-totals .tot-val { text-align: right; font-family: 'DM Mono', monospace; }
+  .doc-totals tr.total-row td {
+    border-top: 2px solid var(--ink);
+    font-weight: 700;
+    font-size: 1rem;
+    padding-top: 10px;
+  }
+  .doc-totals tr.total-row .tot-val { font-family: 'DM Mono', monospace; }
+
+  /* footer split */
+  .doc-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+  .doc-footer h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .doc-footer ul {
+    padding-left: 16px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .doc-footer p { font-size: 0.78rem; color: var(--muted); line-height: 1.8; }
+
+  .doc-signature { margin-top: 24px; }
+  .doc-signature .sig-line {
+    border-bottom: 1.5px solid var(--ink);
+    width: 220px;
+    margin: 24px 0 6px;
+  }
+  .doc-signature p { font-size: 0.78rem; color: var(--muted); }
+
+  .doc-thank {
+    text-align: center;
+    margin-top: 36px;
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── PRINT STYLES ─────────────────────────────── */
+
+  /* ── PRINT STYLES ─────────────────────────────── */
+  @page {
+    margin: 0;
+    size: A4;
+  }
+
+  @media print {
+    body { background: white; }
+    .app-header, .form-panel { display: none !important; }
+    .layout { display: block; }
+    .preview-panel { padding: 0; background: white; }
+    .quote-doc { box-shadow: none; width: 100%; padding: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- FORM PANEL -->
+  <aside class="form-panel">
+
+    <div>
+      <div class="section-label">Sender Info</div>
+      <div class="field-group">
+        <div class="field">
+          <label>Full Name</label>
+          <input id="senderName" value="Heide Cheung" oninput="render()"/>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input id="senderEmail" value="heidecheung@gmail.com" oninput="render()"/>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input id="senderPhone" value="852 6493 6199" oninput="render()"/>
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <input id="senderLocation" value="Hong Kong" oninput="render()"/>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Quote Details</div>
+      <div class="field-group">
+        <div class="row-2">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="quoteDate" oninput="render()"/>
+          </div>
+          <div class="field">
+            <label>Valid Until</label>
+            <input type="date" id="validUntil" oninput="render()"/>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Quote #</label>
+            <input id="quoteNum" value="250217" oninput="render()"/>
+          </div>
+          <div class="field">
+            <label>Customer ID</label>
+            <input id="customerId" value="240" oninput="render()"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Customer</div>
+      <div class="field-group">
+        <div class="field">
+          <label>Name</label>
+          <input id="custName" value="Kal" oninput="render()"/>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input id="custPhone" value="852 9400 4030" oninput="render()"/>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Line Items</div>
+      <div id="line-items"></div>
+      <button class="add-line-btn" onclick="addLine()">＋ Add Line Item</button>
+    </div>
+
+    <div>
+      <div class="section-label">Terms &amp; Notes</div>
+      <div class="field">
+        <label>Terms &amp; Conditions (one per line)</label>
+        <textarea id="terms" rows="4" oninput="render()">Customer will be billed after indicating acceptance of this quote
+Payment will be due prior to delivery of service and goods
+Please fax or mail the signed price quote to the address above</textarea>
+      </div>
+    </div>
+
+    <button class="gen-btn" onclick="printQuote()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6V2h8v4M4 10H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2M4 8h8v6H4V8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Export as PDF
+    </button>
+
+  </aside>
+
+  <!-- PREVIEW PANEL -->
+  <main class="preview-panel">
+    <div class="quote-doc" id="quote-doc">
+      <!-- rendered by JS -->
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── Default line items ────────────────────────
+let lines = [
+  {
+    title: 'Illustration - Pattern Design (The Helena May)',
+    notes: 'JPG / PDF / PNG Format · Ai File · Moodboard included · Design concept included · Custom graphic & illustration · High resolutions · Print material ready · 3 Revisions\n* Additional modification fee HKD150/time',
+    qty: 1,
+    amount: 3800
+  }
+];
+
+// ── Build line-item form rows ─────────────────
+function buildLineItems() {
+  const container = document.getElementById('line-items');
+  container.innerHTML = '';
+  lines.forEach((l, i) => {
+    const div = document.createElement('div');
+    div.className = 'line-item';
+    div.innerHTML = `
+      <button class="remove-btn" onclick="removeLine(${i})" title="Remove">✕</button>
+      <div class="li-row">
+        <input placeholder="Item title" value="${esc(l.title)}" oninput="lines[${i}].title=this.value;render()"/>
+        <input type="number" placeholder="Amount" value="${l.amount}" oninput="lines[${i}].amount=parseFloat(this.value)||0;render()" style="text-align:right"/>
+      </div>
+      <div class="li-row">
+        <textarea placeholder="Notes / terms (optional)" oninput="lines[${i}].notes=this.value;render()">${esc(l.notes)}</textarea>
+        <input type="number" placeholder="Qty" value="${l.qty}" oninput="lines[${i}].qty=parseInt(this.value)||1;render()" style="text-align:center; align-self:flex-start"/>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addLine() {
+  lines.push({ title: '', notes: '', qty: 1, amount: 0 });
+  buildLineItems();
+  render();
+}
+function removeLine(i) {
+  lines.splice(i, 1);
+  buildLineItems();
+  render();
+}
+
+// ── Helpers ───────────────────────────────────
+function val(id) { return document.getElementById(id)?.value || ''; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function formatDate(str) {
+  if (!str) return '—';
+  const d = new Date(str + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' }).replace(/\//g,'/');
+}
+
+function fmtMoney(n) {
+  return 'HKD ' + Number(n).toLocaleString('en-HK', { minimumFractionDigits: 2 });
+}
+
+// ── Render document ───────────────────────────
+function render() {
+  const subtotal = lines.reduce((s, l) => s + (l.amount * l.qty), 0);
+
+  const itemRows = lines.map((l, i) => `
+    <tr>
+      <td class="td-num">${i + 1}.</td>
+      <td class="td-desc">
+        <div class="item-title">${esc(l.title) || '<em style="opacity:.4">Untitled</em>'}</div>
+        ${l.notes ? `<div class="item-notes">${esc(l.notes).replace(/\n/g,'<br>')}</div>` : ''}
+      </td>
+      <td class="td-qty">${l.qty}</td>
+      <td class="td-amt">${fmtMoney(l.amount)}</td>
+    </tr>
+  `).join('');
+
+  const termsList = val('terms').split('\n').filter(t => t.trim())
+    .map((t, i) => `<li>${i + 1}. ${esc(t.trim())}</li>`).join('');
+
+  document.getElementById('quote-doc').innerHTML = `
+    <!-- Top bar -->
+    <div class="doc-topbar">
+      <div class="doc-sender">
+        <h2>${esc(val('senderName'))}</h2>
+        <p>${esc(val('senderEmail'))}<br>${esc(val('senderPhone'))}<br>${esc(val('senderLocation'))}</p>
+      </div>
+      <div class="doc-quote-badge">QUOTE</div>
+    </div>
+
+    <!-- Meta grid -->
+    <div class="doc-meta">
+      <div class="doc-meta-cell"><div class="mlabel">Date</div><div class="mval">${formatDate(val('quoteDate'))}</div></div>
+      <div class="doc-meta-cell"><div class="mlabel">Quote #</div><div class="mval">${esc(val('quoteNum'))}</div></div>
+      <div class="doc-meta-cell"><div class="mlabel">Customer ID</div><div class="mval">${esc(val('customerId'))}</div></div>
+      <div class="doc-meta-cell"><div class="mlabel">Valid Until</div><div class="mval">${formatDate(val('validUntil'))}</div></div>
+    </div>
+
+    <!-- Customer -->
+    <div class="doc-customer">
+      <div class="clabel">Customer</div>
+      <div class="cname">${esc(val('custName')) || '—'}</div>
+      <div class="cphone">${esc(val('custPhone'))}</div>
+    </div>
+
+    <!-- Items table -->
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th style="width:32px">#</th>
+          <th>Description</th>
+          <th style="width:50px;text-align:center">Qty</th>
+          <th style="width:120px;text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="doc-totals">
+      <table>
+        <tr>
+          <td class="tot-label">Subtotal</td>
+          <td class="tot-val">${fmtMoney(subtotal)}</td>
+        </tr>
+        <tr>
+          <td class="tot-label">Tax (0%)</td>
+          <td class="tot-val">—</td>
+        </tr>
+        <tr class="total-row">
+          <td class="tot-label">Total</td>
+          <td class="tot-val">${fmtMoney(subtotal)}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div>
+        <h4>Terms &amp; Conditions</h4>
+        <ul style="list-style:none;padding:0">${termsList}</ul>
+      </div>
+      <div>
+        <h4>Customer Acceptance</h4>
+        <div class="doc-signature">
+          <p>Sign below to accept this quote</p>
+          <div class="sig-line"></div>
+          <p>Print Name: _______________________</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-thank">Thank You For Your Business!</div>
+
+    <div style="margin-top:20px;text-align:center;font-size:0.75rem;color:var(--muted)">
+      Questions? Contact ${esc(val('senderName'))} · ${esc(val('senderPhone'))} · ${esc(val('senderEmail'))}
+    </div>
+  `;
+}
+
+function printQuote() {
+  window.print();
+}
+
+// ── Init ──────────────────────────────────────
+(function init() {
+  // Set today and +30 days as default dates
+  const today = new Date();
+  const plus30 = new Date(today); plus30.setDate(plus30.getDate() + 30);
+  const fmt = d => d.toISOString().split('T')[0];
+  document.getElementById('quoteDate').value = fmt(today);
+  document.getElementById('validUntil').value = fmt(plus30);
+
+  buildLineItems();
+  render();
+
+  // re-render on any form input not already handled
+  document.querySelectorAll('input[oninput], textarea[oninput]').forEach(el => {});
+})();
+</script>
+</body>
+</html>
