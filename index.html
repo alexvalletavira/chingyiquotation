@@ -680,6 +680,12 @@ function printQuote() {
   // re-render on any form input not already handled
   document.querySelectorAll('input[oninput], textarea[oninput]').forEach(el => {});
 })();
+
+  window.onbeforeprint = function() {
+  const doc = document.getElementById('quote-doc');
+  const height = doc.offsetHeight;
+  document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
+};
 </script>
 </body>
 </html>
