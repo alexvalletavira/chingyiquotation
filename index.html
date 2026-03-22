@@ -393,9 +393,13 @@
     size: auto;
   }
 
-  @media print {
-    * { page-break-inside: avoid; break-inside: avoid; }
-    .quote-doc { page-break-inside: avoid; break-inside: avoid; }
+  
+@media print {
+  .app-header, .form-panel { display: none !important; }
+  .layout { display: block; }
+  .preview-panel { padding: 0; background: white; }
+  .quote-doc { box-shadow: none; width: 100%; padding: 30px; page-break-inside: avoid; break-inside: avoid; }
+}
   }
 </style>
 </head>
