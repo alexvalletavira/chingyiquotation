@@ -918,8 +918,8 @@ document.addEventListener('selectionchange', () => {
 
   const range = sel.getRangeAt(0);
   const rect = range.getBoundingClientRect();
-  toolbar.style.left = `${rect.left + rect.width / 2 - toolbar.offsetWidth / 2}px`;
-  toolbar.style.top = `${rect.top + window.scrollY - 44}px`;
+toolbar.style.left = `${rect.left + rect.width / 2 - toolbar.offsetWidth / 2}px`;
+toolbar.style.top = `${rect.top - 44}px`;
   toolbar.classList.add('visible');
   updateToolbarState();
 });
