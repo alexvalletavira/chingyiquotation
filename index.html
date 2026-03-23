@@ -916,12 +916,25 @@ document.addEventListener('selectionchange', () => {
   const field = anchor?.parentElement?.closest('.rich-field') || anchor?.closest?.('.rich-field');
   if (!field) { toolbar.classList.remove('visible'); return; }
 
-  const range = sel.getRangeAt(0);
-  const rect = range.getBoundingClientRect();
-toolbar.style.left = `${rect.left + rect.width / 2 - toolbar.offsetWidth / 2}px`;
-toolbar.style.top = `${rect.top - 44}px`;
+  // Make visible first so offsetWidth is available
   toolbar.classList.add('visible');
   updateToolbarState();
+
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  const tbWidth = toolbar.offsetWidth;
+  const tbHeight = toolbar.offsetHeight;
+
+  let left = rect.left + rect.width / 2 - tbWidth / 2;
+  let top = rect.top - tbHeight - 8;
+
+  // Keep within viewport bounds
+  if (left < 8) left = 8;
+  if (left + tbWidth > window.innerWidth - 8) left = window.innerWidth - tbWidth - 8;
+  if (top < 8) top = rect.bottom + 8; // flip below if not enough space above
+
+  toolbar.style.left = `${left}px`;
+  toolbar.style.top = `${top}px`;
 });
 
 document.addEventListener('mousedown', (e) => {
