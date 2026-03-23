@@ -851,7 +851,17 @@ function render() {
 }
 
 function printQuote() {
-  window.print();
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    // Mobile: just print normally, browser handles pagination
+    window.print();
+  } else {
+    // Desktop: measure and force single page
+    const doc = document.getElementById('quote-doc');
+    const height = doc.offsetHeight;
+    document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
+    window.print();
+  }
 }
 
 // ── Init ──────────────────────────────────────
@@ -864,12 +874,6 @@ function printQuote() {
   buildLineItems();
   render();
 })();
-
-window.onbeforeprint = function() {
-  const doc = document.getElementById('quote-doc');
-  const height = doc.offsetHeight;
-  document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
-};
 
 // ── Floating rich text toolbar ────────────────
 const toolbar = document.getElementById('rich-toolbar');
