@@ -529,7 +529,7 @@
 .doc-footer { page-break-inside: avoid; break-inside: avoid; }
   .doc-totals { page-break-inside: avoid; break-inside: avoid; }
 .doc-footer { page-break-inside: avoid; break-inside: avoid; }
-.doc-thank { page-break-inside: avoid; break-inside: avoid; }
+.doc-contact { page-break-inside: avoid; break-inside: avoid; page-break-before: avoid; break-before: avoid; }
 }
 
   @media print and (max-width: 600px) {
@@ -868,7 +868,7 @@ function render() {
 
     <div class="doc-thank">Thank You For Your Business!</div>
 
-    <div style="margin-top:20px;text-align:center;font-size:0.75rem;color:var(--muted)">
+    <div class="doc-contact" style="margin-top:20px;text-align:center;font-size:0.75rem;color:var(--muted)">
       Questions? Contact ${esc(val('senderName'))} · ${esc(val('senderPhone'))} · ${esc(val('senderEmail'))}
     </div>
   `;
