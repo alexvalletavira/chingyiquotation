@@ -899,7 +899,7 @@ function printQuote() {
   } else {
     // Desktop: measure and force single page
     const doc = document.getElementById('quote-doc');
-     const height = doc.offsetHeight + 90;
+     const height = doc.offsetHeight + 120;
     document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
     window.print();
   }
