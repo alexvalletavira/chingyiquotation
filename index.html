@@ -761,7 +761,10 @@ function formatDate(str) {
 }
 
 function fmtMoney(n) {
-  return 'HKD ' + Number(n).toLocaleString('en-HK', { minimumFractionDigits: 2 });
+  const fixed = Number(n).toFixed(2);
+  const parts = fixed.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return 'HKD ' + parts[0] + '.' + parts[1];
 }
 
 // ── Render document ───────────────────────────
