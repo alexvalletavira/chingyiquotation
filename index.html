@@ -505,17 +505,15 @@
 }
 
   /* ── PRINT STYLES ─────────────────────────────── */
-  @page {
-    margin: 0;
-    size: auto;
-  }
 
-  @page :first {
+    @page :first {
   margin: 0;
 }
-@page {
-  margin-top: 32mm;
-}
+  @page {
+    size: auto;
+    margin-top: 18mm;
+  margin-bottom: 18mm;
+  }
 
 @media print {
   .form-panel, .rich-toolbar { display: none !important; }
