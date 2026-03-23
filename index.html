@@ -510,6 +510,13 @@
     size: auto;
   }
 
+  @page :first {
+  margin: 0;
+}
+@page {
+  margin-top: 16mm;
+}
+
 @media print {
   .form-panel, .rich-toolbar { display: none !important; }
   .layout { display: block; }
@@ -523,6 +530,8 @@
     page-break-inside: auto;
     break-inside: auto;
   }
+  .doc-table tbody tr { page-break-inside: avoid; break-inside: avoid; }
+.doc-footer { page-break-inside: avoid; break-inside: avoid; }
 }
 </style>
 </head>
