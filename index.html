@@ -509,7 +509,6 @@
 
 @page {
   size: auto;
-  margin: 22mm;
 }
 
 @media print {
@@ -531,6 +530,12 @@
   .doc-totals { page-break-inside: avoid; break-inside: avoid; }
 .doc-footer { page-break-inside: avoid; break-inside: avoid; }
 .doc-thank { page-break-inside: avoid; break-inside: avoid; }
+}
+
+  @media print and (max-width: 600px) {
+  .quote-doc {
+    padding: 8mm !important;
+  }
 }
 </style>
 </head>
