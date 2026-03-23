@@ -866,12 +866,15 @@ function render() {
       </div>
     </div>
 
-    <div class="doc-thank">Thank You For Your Business!</div>
-
-    <div class="doc-contact" style="margin-top:20px;text-align:center;font-size:0.75rem;color:var(--muted)">
-      Questions? Contact ${esc(val('senderName'))} · ${esc(val('senderPhone'))} · ${esc(val('senderEmail'))}
-    </div>
+    <div style="page-break-inside: avoid; break-inside: avoid;">
+  <div class="doc-thank">Thank You For Your Business!</div>
+  <div class="doc-contact" style="margin-top:20px;text-align:center;font-size:0.75rem;color:var(--muted)">
+    Questions? Contact ${esc(val('senderName'))} · ${esc(val('senderPhone'))} · ${esc(val('senderEmail'))}
+  </div>
+</div>
   `;
+
+  
 }
 
 function printQuote() {
