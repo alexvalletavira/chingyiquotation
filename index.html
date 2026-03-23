@@ -583,7 +583,7 @@
       <div class="field-group">
         <div class="field">
           <label>Full Name</label>
-          <input id="senderName" value="Heide XXXX5" oninput="render()"/>
+          <input id="senderName" value="Heide XXXX6" oninput="render()"/>
         </div>
         <div class="field">
           <label>Email</label>
@@ -899,7 +899,7 @@ function printQuote() {
   } else {
     // Desktop: measure and force single page
     const doc = document.getElementById('quote-doc');
-     const height = doc.offsetHeight + 120;
+     const height = doc.offsetHeight + 90;
     document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
     window.print();
   }
