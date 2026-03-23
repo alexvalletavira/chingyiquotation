@@ -29,7 +29,7 @@
     display: grid;
     grid-template-columns: 400px 1fr;
     gap: 0;
-    min-height: calc(100vh - 64px);
+    min-height: 100vh;
   }
 
   /* ── LEFT PANEL: FORM ─────────────────────────── */
@@ -114,7 +114,8 @@
     transition: border-color 0.15s;
   }
   .line-item input:focus { border-color: var(--accent); }
-  .line-item textarea {
+
+  .line-item .rich-field {
     border: 1px solid var(--border);
     border-radius: 5px;
     padding: 7px 10px;
@@ -122,13 +123,19 @@
     font-family: 'DM Sans', sans-serif;
     background: var(--white);
     color: var(--ink);
-    resize: vertical;
     min-height: 60px;
     outline: none;
     width: 100%;
     transition: border-color 0.15s;
+    line-height: 1.5;
+    cursor: text;
   }
-  .line-item textarea:focus { border-color: var(--accent); }
+  .line-item .rich-field:focus { border-color: var(--accent); }
+  .line-item .rich-field.title-field {
+    font-size: 0.85rem;
+    min-height: unset;
+  }
+
   .remove-btn {
     position: absolute;
     top: 8px; right: 8px;
@@ -207,12 +214,18 @@
   }
 
   /* top bar */
-  .doc-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 36px;
-  }
+.doc-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 36px;
+}
+.doc-topbar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
   .doc-sender h2 {
     font-family: 'DM Serif Display', serif;
     font-size: 1.6rem;
@@ -385,7 +398,111 @@
     letter-spacing: 0.02em;
   }
 
-  /* ── PRINT STYLES ─────────────────────────────── */
+  /* ── RICH TEXT TOOLBAR ───────────────────────── */
+  .rich-toolbar {
+    position: fixed;
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 5px 7px;
+    display: none;
+    align-items: center;
+    gap: 3px;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .rich-toolbar.visible { display: flex; }
+  .rich-toolbar button {
+    background: none;
+    border: none;
+    color: var(--paper);
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px 7px;
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.1s;
+    line-height: 1;
+  }
+  .rich-toolbar button:hover { background: rgba(255,255,255,0.15); }
+  .rich-toolbar button.active { background: var(--accent); }
+  .rich-toolbar .tb-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(255,255,255,0.2);
+    margin: 0 2px;
+  }
+  .rich-toolbar select {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--paper);
+    font-size: 0.78rem;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 4px;
+    padding: 3px 5px;
+    cursor: pointer;
+    outline: none;
+  }
+  .rich-toolbar select option { background: var(--ink); color: var(--paper); }
+
+  .tb-font-group { position: relative; }
+.tb-font-toggle {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: var(--paper);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+.tb-font-toggle:hover { background: rgba(255,255,255,0.2); }
+.tb-font-menu {
+  display: none;
+  position: fixed;
+  background: var(--ink);
+  border-radius: 6px;
+  padding: 4px;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 10000;
+  min-width: 120px;
+}
+.tb-font-menu.open { display: flex; }
+.tb-font-menu button {
+  background: none;
+  border: none;
+  color: var(--paper);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  text-align: left;
+  width: 100%;
+}
+.tb-font-menu button:hover { background: rgba(255,255,255,0.15); }
+
+.doc-meta-small {
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: right;
+}
+.doc-meta-small .mlabel {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 3px 10px 3px 0;
+  white-space: nowrap;
+}
+.doc-meta-small .mval {
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 3px 0;
+  white-space: nowrap;
+}
 
   /* ── PRINT STYLES ─────────────────────────────── */
   @page {
@@ -393,17 +510,33 @@
     size: auto;
   }
 
-  
-@media print {
-  .app-header, .form-panel { display: none !important; }
-  .layout { display: block; }
-  .preview-panel { padding: 0; background: white; }
-  .quote-doc { box-shadow: none; width: 100%; padding: 30px; page-break-inside: avoid; break-inside: avoid; }
-}
+  @media print {
+    .form-panel, .rich-toolbar { display: none !important; }
+    .layout { display: block; }
+    .preview-panel { padding: 0; background: white; }
+    .quote-doc { box-shadow: none; width: 100%; padding: 30px; page-break-inside: avoid; break-inside: avoid; }
   }
 </style>
 </head>
 <body>
+
+<!-- Floating rich text toolbar -->
+<div class="rich-toolbar" id="rich-toolbar">
+  <div class="tb-font-group" id="tb-font-group">
+    <button class="tb-font-toggle" id="tb-font-toggle" onclick="toggleFontMenu(event)">Font ▾</button>
+    <div class="tb-font-menu" id="tb-font-menu">
+      <button onclick="applyFont('DM Sans')">DM Sans</button>
+      <button onclick="applyFont('DM Serif Display')" style="font-family:'DM Serif Display',serif">Serif</button>
+      <button onclick="applyFont('DM Mono')" style="font-family:'DM Mono',monospace">Mono</button>
+      <button onclick="applyFont('Georgia')" style="font-family:Georgia,serif">Georgia</button>
+      <button onclick="applyFont('Arial')" style="font-family:Arial,sans-serif">Arial</button>
+    </div>
+  </div>
+  <div class="tb-divider"></div>
+  <button id="tb-bold" onclick="execRichCmd('bold')" title="Bold"><b>B</b></button>
+  <button id="tb-italic" onclick="execRichCmd('italic')" title="Italic"><i>I</i></button>
+  <button id="tb-underline" onclick="execRichCmd('underline')" title="Underline"><u>U</u></button>
+</div>
 
 <div class="layout">
 
@@ -438,11 +571,11 @@
         <div class="row-2">
           <div class="field">
             <label>Date</label>
-            <input type="date" id="quoteDate" oninput="render()"/>
+            <input type="date" id="quoteDate" lang="en-GB" oninput="render()"/>
           </div>
           <div class="field">
             <label>Valid Until</label>
-            <input type="date" id="validUntil" oninput="render()"/>
+            <input type="date" id="validUntil" lang="en-GB" oninput="render()"/>
           </div>
         </div>
         <div class="row-2">
@@ -479,6 +612,26 @@
     </div>
 
     <div>
+  <div class="section-label">Tax</div>
+  <div class="field">
+    <label>Tax Rate (%)</label>
+    <input id="taxRate" type="number" value="0" min="0" step="0.1" oninput="render()"/>
+  </div>
+</div>
+
+    <div>
+  <div class="section-label">Discount</div>
+  <div class="field">
+  <label>Discount (%)</label>
+  <input id="discount" type="number" value="0" min="0" max="100" step="0.1" oninput="render()"/>
+</div>
+</div>
+
+
+
+
+
+    <div>
       <div class="section-label">Terms &amp; Notes</div>
       <div class="field">
         <label>Terms &amp; Conditions (one per line)</label>
@@ -509,11 +662,35 @@ Please fax or mail the signed price quote to the address above</textarea>
 let lines = [
   {
     title: 'Illustration - Pattern Design (The Helena May)',
-    notes: 'JPG / PDF / PNG Format · Ai File · Moodboard included · Design concept included · Custom graphic & illustration · High resolutions · Print material ready · 3 Revisions\n* Additional modification fee HKD150/time',
+    notes: 'JPG / PDF / PNG Format · Ai File · Moodboard included · Design concept included · Custom graphic &amp; illustration · High resolutions · Print material ready · 3 Revisions<br>* Additional modification fee HKD150/time',
     qty: 1,
     amount: 3800
   }
 ];
+
+function toggleFontMenu(e) {
+  e.preventDefault();
+  const menu = document.getElementById('tb-font-menu');
+  const btn = document.getElementById('tb-font-toggle');
+  const rect = btn.getBoundingClientRect();
+  menu.style.top = `${rect.bottom + 6}px`;
+  menu.style.left = `${rect.left}px`;
+  menu.classList.toggle('open');
+}
+
+function applyFont(fontFamily) {
+  document.getElementById('tb-font-menu').classList.remove('open');
+  execRichCmd('fontName', fontFamily);
+}
+
+// Close font menu when clicking outside
+document.addEventListener('mousedown', (e) => {
+  if (!e.target.closest('#tb-font-group')) {
+    document.getElementById('tb-font-menu')?.classList.remove('open');
+  }
+  if (!toolbar.contains(e.target)) return;
+  e.preventDefault();
+});
 
 // ── Build line-item form rows ─────────────────
 function buildLineItems() {
@@ -525,14 +702,22 @@ function buildLineItems() {
     div.innerHTML = `
       <button class="remove-btn" onclick="removeLine(${i})" title="Remove">✕</button>
       <div class="li-row">
-        <input placeholder="Item title" value="${esc(l.title)}" oninput="lines[${i}].title=this.value;render()"/>
+        <div class="rich-field title-field" contenteditable="true" data-index="${i}" data-field="title">${l.title}</div>
         <input type="number" placeholder="Amount" value="${l.amount}" oninput="lines[${i}].amount=parseFloat(this.value)||0;render()" style="text-align:right"/>
       </div>
       <div class="li-row">
-        <textarea placeholder="Notes / terms (optional)" oninput="lines[${i}].notes=this.value;render()">${esc(l.notes)}</textarea>
+        <div class="rich-field" contenteditable="true" data-index="${i}" data-field="notes">${l.notes}</div>
         <input type="number" placeholder="Qty" value="${l.qty}" oninput="lines[${i}].qty=parseInt(this.value)||1;render()" style="text-align:center; align-self:flex-start"/>
       </div>
     `;
+    div.querySelectorAll('.rich-field').forEach(el => {
+      el.addEventListener('input', () => {
+        const idx = +el.dataset.index;
+        const field = el.dataset.field;
+        lines[idx][field] = el.innerHTML;
+        render();
+      });
+    });
     container.appendChild(div);
   });
 }
@@ -570,43 +755,44 @@ function render() {
     <tr>
       <td class="td-num">${i + 1}.</td>
       <td class="td-desc">
-        <div class="item-title">${esc(l.title) || '<em style="opacity:.4">Untitled</em>'}</div>
-        ${l.notes ? `<div class="item-notes">${esc(l.notes).replace(/\n/g,'<br>')}</div>` : ''}
+        <div class="item-title">${l.title || '<em style="opacity:.4">Untitled</em>'}</div>
+        ${l.notes ? `<div class="item-notes">${l.notes}</div>` : ''}
       </td>
       <td class="td-qty">${l.qty}</td>
-      <td class="td-amt">${fmtMoney(l.amount)}</td>
+      <td class="td-amt">${fmtMoney(l.amount * l.qty)}</td>
     </tr>
   `).join('');
+
+  const taxRate = parseFloat(val('taxRate')) || 0;
+
+  const discount = parseFloat(val('discount')) || 0;
 
   const termsList = val('terms').split('\n').filter(t => t.trim())
     .map((t, i) => `<li>${i + 1}. ${esc(t.trim())}</li>`).join('');
 
   document.getElementById('quote-doc').innerHTML = `
-    <!-- Top bar -->
-    <div class="doc-topbar">
-      <div class="doc-sender">
-        <h2>${esc(val('senderName'))}</h2>
-        <p>${esc(val('senderEmail'))}<br>${esc(val('senderPhone'))}<br>${esc(val('senderLocation'))}</p>
-      </div>
-      <div class="doc-quote-badge">QUOTE</div>
-    </div>
+<div class="doc-topbar">
+  <div class="doc-sender">
+    <h2>${esc(val('senderName'))}</h2>
+    <p>${esc(val('senderEmail'))}<br>${esc(val('senderPhone'))}<br>${esc(val('senderLocation'))}</p>
+  </div>
+  <div class="doc-topbar-right">
+    <div class="doc-quote-badge">QUOTE</div>
+    <table class="doc-meta-small">
+      <tr><td class="mlabel">Date</td><td class="mval">${formatDate(val('quoteDate'))}</td></tr>
+      <tr><td class="mlabel">Quote #</td><td class="mval">${esc(val('quoteNum'))}</td></tr>
+      <tr><td class="mlabel">Customer ID</td><td class="mval">${esc(val('customerId'))}</td></tr>
+      <tr><td class="mlabel">Valid Until</td><td class="mval">${formatDate(val('validUntil'))}</td></tr>
+    </table>
+  </div>
+</div>
 
-    <!-- Meta grid -->
-    <div class="doc-meta">
-      <div class="doc-meta-cell"><div class="mlabel">Date</div><div class="mval">${formatDate(val('quoteDate'))}</div></div>
-      <div class="doc-meta-cell"><div class="mlabel">Quote #</div><div class="mval">${esc(val('quoteNum'))}</div></div>
-      <div class="doc-meta-cell"><div class="mlabel">Customer ID</div><div class="mval">${esc(val('customerId'))}</div></div>
-      <div class="doc-meta-cell"><div class="mlabel">Valid Until</div><div class="mval">${formatDate(val('validUntil'))}</div></div>
-    </div>
-
-    <!-- Customer -->
     <div class="doc-customer">
       <div class="clabel">Customer</div>
       <div class="cname">${esc(val('custName')) || '—'}</div>
       <div class="cphone">${esc(val('custPhone'))}</div>
     </div>
 
-    <!-- Items table -->
     <table class="doc-table">
       <thead>
         <tr>
@@ -619,25 +805,28 @@ function render() {
       <tbody>${itemRows}</tbody>
     </table>
 
-    <!-- Totals -->
     <div class="doc-totals">
       <table>
         <tr>
-          <td class="tot-label">Subtotal</td>
-          <td class="tot-val">${fmtMoney(subtotal)}</td>
-        </tr>
-        <tr>
-          <td class="tot-label">Tax (0%)</td>
-          <td class="tot-val">—</td>
-        </tr>
-        <tr class="total-row">
-          <td class="tot-label">Total</td>
-          <td class="tot-val">${fmtMoney(subtotal)}</td>
-        </tr>
+  <tr>
+  <td class="tot-label">Subtotal</td>
+  <td class="tot-val">${fmtMoney(subtotal)}</td>
+</tr>
+<tr>
+  <td class="tot-label">Discount ${discount > 0 ? `(${discount}%)` : ''}</td>
+  <td class="tot-val">${discount > 0 ? '− ' + fmtMoney(subtotal * discount / 100) : '—'}</td>
+</tr>
+<tr>
+  <td class="tot-label">Tax ${taxRate > 0 ? `(${taxRate}%)` : ''}</td>
+  <td class="tot-val">${taxRate > 0 ? fmtMoney((subtotal - (discount > 0 ? subtotal * discount / 100 : 0)) * taxRate / 100) : '—'}</td>
+</tr>
+<tr class="total-row">
+  <td class="tot-label">Total</td>
+  <td class="tot-val">${fmtMoney((subtotal - (discount > 0 ? subtotal * discount / 100 : 0)) * (1 + taxRate / 100))}</td>
+</tr>
       </table>
     </div>
 
-    <!-- Footer -->
     <div class="doc-footer">
       <div>
         <h4>Terms &amp; Conditions</h4>
@@ -667,25 +856,74 @@ function printQuote() {
 
 // ── Init ──────────────────────────────────────
 (function init() {
-  // Set today and +30 days as default dates
   const today = new Date();
   const plus30 = new Date(today); plus30.setDate(plus30.getDate() + 30);
   const fmt = d => d.toISOString().split('T')[0];
   document.getElementById('quoteDate').value = fmt(today);
   document.getElementById('validUntil').value = fmt(plus30);
-
   buildLineItems();
   render();
-
-  // re-render on any form input not already handled
-  document.querySelectorAll('input[oninput], textarea[oninput]').forEach(el => {});
 })();
 
-  window.onbeforeprint = function() {
+window.onbeforeprint = function() {
   const doc = document.getElementById('quote-doc');
   const height = doc.offsetHeight;
   document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
 };
+
+// ── Floating rich text toolbar ────────────────
+const toolbar = document.getElementById('rich-toolbar');
+
+function execRichCmd(cmd, value = null) {
+  if (cmd === 'fontName' && value) {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    const span = document.createElement('span');
+    span.style.fontFamily = value;
+    range.surroundContents(span);
+    // sync back to lines array
+    const field = span.closest('.rich-field');
+    if (field) {
+      const idx = +field.dataset.index;
+      const f = field.dataset.field;
+      lines[idx][f] = field.innerHTML;
+      render();
+    }
+  } else {
+    document.execCommand(cmd, false, value);
+  }
+  updateToolbarState();
+}
+
+function updateToolbarState() {
+  document.getElementById('tb-bold').classList.toggle('active', document.queryCommandState('bold'));
+  document.getElementById('tb-italic').classList.toggle('active', document.queryCommandState('italic'));
+  document.getElementById('tb-underline').classList.toggle('active', document.queryCommandState('underline'));
+}
+
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || sel.toString().trim() === '') {
+    toolbar.classList.remove('visible');
+    return;
+  }
+  const anchor = sel.anchorNode;
+  const field = anchor?.parentElement?.closest('.rich-field') || anchor?.closest?.('.rich-field');
+  if (!field) { toolbar.classList.remove('visible'); return; }
+
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  toolbar.style.left = `${rect.left + rect.width / 2 - toolbar.offsetWidth / 2}px`;
+  toolbar.style.top = `${rect.top + window.scrollY - 44}px`;
+  toolbar.classList.add('visible');
+  updateToolbarState();
+});
+
+document.addEventListener('mousedown', (e) => {
+  if (!toolbar.contains(e.target)) return;
+  e.preventDefault(); // keep selection alive when clicking toolbar
+});
 </script>
 </body>
 </html>
