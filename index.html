@@ -894,14 +894,14 @@ function render() {
 function printQuote() {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
-    // Mobile: just print normally, browser handles pagination
     window.print();
   } else {
-    // Desktop: measure and force single page
-    const doc = document.getElementById('quote-doc');
-     const height = doc.offsetHeight + 120;
-    document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
-    window.print();
+    setTimeout(() => {
+      const doc = document.getElementById('quote-doc');
+      const height = doc.offsetHeight;
+      document.querySelector('style').textContent += `@page { size: 700px ${height}px; margin: 0; }`;
+      window.print();
+    }, 300);
   }
 }
 
